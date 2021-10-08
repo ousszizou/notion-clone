@@ -1,0 +1,8 @@
+// Passwordless authentication
+
+- Get email from user
+- Send Email with temporary code
+  -> if user
+    ==> temporary login code & link to redirect to dashboard 
+  -> if !user
+    ==> temporary signup code & link to signup

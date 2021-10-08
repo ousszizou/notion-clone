@@ -4,6 +4,7 @@ import router from './router'
 import store from './store'
 import AppLayout from "@/layouts/AppLayout";
 import "tailwindcss/tailwind.css";
+import "./assets/main.css"
 
 Vue.config.productionTip = false;
 
