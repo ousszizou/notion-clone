@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\URL;
+use App\Models\AuthCode;
 
 class PasswordlessController extends Controller
 {
@@ -16,10 +17,20 @@ class PasswordlessController extends Controller
         $code = $this->generateCode();
         // Generate a URL with the code and email address by generateUrl() method
         $url = $this->generateUrl($code, $email);
+        // Store the code & email to DB
+        $this->SaveCredientialsToDB($code, $email);
         return response()->json([
             "email" => $email,
             "code" => $code,
             "url" => $url
+        ]);
+    }
+
+    // Store the code & email to DB
+    protected function SaveCredientialsToDB($code, $email) {
+        return AuthCode::create([
+            "code" => $code,
+            "email" => $email
         ]);
     }
 
