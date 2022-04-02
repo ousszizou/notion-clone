@@ -20,3 +20,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::post("/passwordless-auth", [PasswordlessController::class, "send"]);
+Route::get("/passwordless-auth/verify/{email}/{code}", [PasswordlessController::class, "verify"])->name("passwordless-auth.verify");
