@@ -1,8 +1,27 @@
 // Passwordless authentication
 
 - Get email from user
-- Send Email with temporary code
-  -> if user
-    ==> temporary login code & link to redirect to dashboard 
-  -> if !user
-    ==> temporary signup code & link to signup
+- Send Email with temporary code & url
+  -> check Email
+    -> if user found
+      ==> temporary login code & link to redirect to dashboard 
+    -> if !user
+      ==> temporary signup code & link to signup
+
+- carachteristics of temporary code
+  -> random
+  -> expires in 1 hours
+  -> only one code per user (signin)
+  -> only one code per email (signup)
+
+- Code Model
+  -> code
+  -> email
+  -> timestamps (created_at, updated_at)
+
+- User Model
+  -> email
+  -> password
+  -> username
+  -> avatar
+  -> timestamps (created_at, updated_at)
