@@ -67,4 +67,18 @@ class PasswordlessController extends Controller
     protected function sendMail($url, $code, $email) {
         \Mail::to($email)->send(new MagicAuthCodeLink($url, $code));
     }
+
+    // Verrify the code & email address from the Signed URL
+    public function verify(Request $request) {
+        $email = $request->email;
+        $code = $request->code;
+
+        // Check if the Signed URL is valid or not
+        if (!URL::hasValidSignature($request)) {
+            return response()->json([
+                "status" => false,
+                "message" => "Invalid or Expired url provided."
+            ], 403);
+        }
+    }
 }
