@@ -80,5 +80,20 @@ class PasswordlessController extends Controller
                 "message" => "Invalid or Expired url provided."
             ], 403);
         }
+
+        // Check if the code & email address is found in the database
+        if (AuthCode::where("email", $email)->where("code", $code)->exists()) {
+            // Delete the code & email from the database
+            AuthCode::where("email", $email)->where("code", $code)->delete();
+            return response()->json([
+                "status" => true,
+                "message" => "You are now logged in."
+            ], 200);
+        } else {
+            return response()->json([
+                "status" => false,
+                "message" => "Invalid code or email address provided."
+            ], 401);
+        }
     }
 }
