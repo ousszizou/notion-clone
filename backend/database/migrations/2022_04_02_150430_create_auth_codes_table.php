@@ -15,8 +15,8 @@ class CreateAuthCodesTable extends Migration
     {
         Schema::create('auth_codes', function (Blueprint $table) {
             $table->id();
-            $table->string("code")->unique();
-            $table->string("email")->unique();
+            $table->string('code')->unique();
+            $table->string('email')->unique();
             $table->timestamps();
         });
     }

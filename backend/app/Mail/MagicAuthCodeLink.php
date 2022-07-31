@@ -3,7 +3,6 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
@@ -12,7 +11,9 @@ class MagicAuthCodeLink extends Mailable
     use Queueable, SerializesModels;
 
     public $url;
+
     public $code;
+
     /**
      * Create a new message instance.
      *
@@ -31,9 +32,9 @@ class MagicAuthCodeLink extends Mailable
      */
     public function build()
     {
-        return $this->subject(config("app.name"))->markdown("emails.magic-auth-code-link")->with([
-            "url" => $this->url,
-            "code" => $this->code
+        return $this->subject(config('app.name'))->markdown('emails.magic-auth-code-link')->with([
+            'url' => $this->url,
+            'code' => $this->code,
         ]);
     }
 }

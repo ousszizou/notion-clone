@@ -3,20 +3,21 @@
 namespace App\Http\Controllers\Api\Auth;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\URL;
+use App\Mail\MagicAuthCodeLink;
 use App\Models\AuthCode;
 use App\Models\User;
-use App\Mail\MagicAuthCodeLink;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Str;
 
 class PasswordlessController extends Controller
 {
-    public function send(Request $request) {
+    public function send(Request $request)
+    {
         // Get the email address from the request
         $email = $request->email;
         // Check if the email address is found in the database
-        if (!User::where("email", $email)->exists()) {
+        if (! User::where('email', $email)->exists()) {
             // Generate a random code by generateCode() method
             $code = $this->generateCode();
             // Generate a URL with the code and email address by generateUrl() method
@@ -25,74 +26,81 @@ class PasswordlessController extends Controller
             $this->SaveCredientialsToDB($code, $email);
             // Send Mail to the user with the URL & code
             $this->sendMail($url, $code, $email);
+
             return response()->json([
-                "message" => "We just sent you a temporary signup code. Please check your inbox.",
-                "status" => 200
+                'message' => 'We just sent you a temporary signup code. Please check your inbox.',
+                'status' => 200,
             ]);
         } else {
             return response()->json([
-                "mesage" => "We just sent you a temporary login code. Please check your inbox.",
-                "status" => 200
+                'mesage' => 'We just sent you a temporary login code. Please check your inbox.',
+                'status' => 200,
             ]);
         }
     }
 
     // Store the code & email to DB
-    protected function SaveCredientialsToDB($code, $email) {
+    protected function SaveCredientialsToDB($code, $email)
+    {
         return AuthCode::create([
-            "code" => $code,
-            "email" => $email
+            'code' => $code,
+            'email' => $email,
         ]);
     }
 
     // Generate a random code for passwordless authentication
-    protected function generateCode() {
-        $code = Str::random(5) . "-" . Str::random(3) . "-" . Str::random(4) . "-" . Str::random(5);
+    protected function generateCode()
+    {
+        $code = Str::random(5).'-'.Str::random(3).'-'.Str::random(4).'-'.Str::random(5);
 
         return $code;
     }
 
     // Generate a Signed URL with the code and email address
-    protected function generateUrl($code, $email) {
+    protected function generateUrl($code, $email)
+    {
         $signedUrl = URL::temporarySignedRoute(
             'passwordless-auth.verify', now()->addMinutes(30), ['email' => $email, 'code' => $code]
         );
 
-        $url = env("SPA_URL") . "/passwordless-auth?queryURL=" . $signedUrl;
+        $url = env('SPA_URL').'/passwordless-auth?queryURL='.$signedUrl;
 
         return $url;
     }
 
     // Send Mail to user
-    protected function sendMail($url, $code, $email) {
+    protected function sendMail($url, $code, $email)
+    {
         \Mail::to($email)->send(new MagicAuthCodeLink($url, $code));
     }
 
     // Verrify the code & email address from the Signed URL
-    public function verify(Request $request) {
+    public function verify(Request $request)
+    {
         $email = $request->email;
         $code = $request->code;
 
         // Check if the Signed URL is valid or not
-        if (!URL::hasValidSignature($request)) {
+        if (! URL::hasValidSignature($request)) {
             return response()->json([
-                "status" => false,
-                "message" => "Invalid or Expired url provided."
+                'status' => false,
+                'message' => 'Invalid or Expired url provided.',
             ], 403);
         }
 
         // Check if the code & email address is found in the database
-        if (AuthCode::where("email", $email)->where("code", $code)->exists()) {
+        if (AuthCode::where('email', $email)->where('code', $code)->exists()) {
             // Delete the code & email from the database
-            AuthCode::where("email", $email)->where("code", $code)->delete();
+            AuthCode::where('email', $email)->where('code', $code)->delete();
+
             return response()->json([
-                "status" => true,
-                "message" => "You are now logged in."
+                'status' => true,
+                'message' => 'You are now logged in.',
             ], 200);
         } else {
             return response()->json([
-                "status" => false,
-                "message" => "Invalid code or email address provided."
+                'status' => false,
+                'message' => 'Invalid code or email address provided.',
             ], 401);
         }
     }
